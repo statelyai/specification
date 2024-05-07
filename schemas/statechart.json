@@ -90,16 +90,28 @@
       "$ref": "#/definitions/initialObject"
     },
     "entry": {
-      "$ref": "#/definitions/actionsDef"
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/actionObject"
+      }
     },
     "exit": {
-      "$ref": "#/definitions/actionsDef"
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/actionObject"
+      }
     },
     "invoke": {
-      "$ref": "#/definitions/invokeDef"
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/invokeObject"
+      }
     },
     "on": {
-      "$ref": "#/definitions/transitionsDef"
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/transitionObject"
+      }
     },
     "states": {
       "$ref": "#/definitions/statesObject"
@@ -127,17 +139,6 @@
       },
       "additionalProperties": false,
       "required": ["type"]
-    },
-    "actionsDef": {
-      "oneOf": [
-        { "$ref": "#/definitions/actionObject" },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/actionObject"
-          }
-        }
-      ]
     },
     "baseStateNode": {
       "type": "object",
@@ -174,25 +175,40 @@
               "not": {}
             },
             "entry": {
-              "$ref": "#/definitions/actionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/actionObject"
+              }
             },
             "exit": {
-              "$ref": "#/definitions/actionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/actionObject"
+              }
             },
             "initial": {
               "$ref": "#/definitions/initialObject"
             },
             "invoke": {
-              "$ref": "#/definitions/invokeDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/invokeObject"
+              }
             },
             "on": {
-              "$ref": "#/definitions/transitionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/transitionObject"
+              }
             },
             "states": {
               "$ref": "#/definitions/statesObject"
             },
             "onDone": {
-              "$ref": "#/definitions/transitionDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/invokeObject"
+              }
             }
           },
           "required": ["initial", "states"]
@@ -210,22 +226,37 @@
               "const": "parallel"
             },
             "entry": {
-              "$ref": "#/definitions/actionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/actionObject"
+              }
             },
             "exit": {
-              "$ref": "#/definitions/actionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/actionObject"
+              }
             },
             "invoke": {
-              "$ref": "#/definitions/invokeDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/invokeObject"
+              }
             },
             "on": {
-              "$ref": "#/definitions/transitionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/transitionObject"
+              }
             },
             "states": {
               "$ref": "#/definitions/statesObject"
             },
             "onDone": {
-              "$ref": "#/definitions/transitionDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/invokeObject"
+              }
             }
           },
           "required": ["type", "states"]
@@ -243,16 +274,28 @@
               "const": "atomic"
             },
             "entry": {
-              "$ref": "#/definitions/actionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/actionObject"
+              }
             },
             "exit": {
-              "$ref": "#/definitions/actionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/actionObject"
+              }
             },
             "invoke": {
-              "$ref": "#/definitions/invokeDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/invokeObject"
+              }
             },
             "on": {
-              "$ref": "#/definitions/transitionsDef"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/transitionsDef"
+              }
             }
           }
         }
@@ -313,21 +356,13 @@
     "transitionsDef": {
       "type": "object",
       "patternProperties": {
-        "^.*$": { "$ref": "#/definitions/transitionDef" }
-      }
-    },
-    "transitionDef": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/transitionObject"
-        },
-        {
+        "^.*$": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/transitionObject"
           }
         }
-      ]
+      }
     },
     "transitionObject": {
       "type": "object",
@@ -350,7 +385,10 @@
           ]
         },
         "actions": {
-          "$ref": "#/definitions/actionsDef"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/actionObject"
+          }
         },
         "guard": {
           "$ref": "#/definitions/guardObject"
@@ -379,28 +417,26 @@
           "additionalProperties": true
         },
         "onDone": {
-          "$ref": "#/definitions/transitionDef"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/invokeObject"
+          }
         },
         "onError": {
-          "$ref": "#/definitions/transitionDef"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/invokeObject"
+          }
         },
         "onSnapshot": {
-          "$ref": "#/definitions/transitionDef"
-        }
-      },
-      "required": ["src"],
-      "additionalProperties": false
-    },
-    "invokeDef": {
-      "oneOf": [
-        { "$ref": "#/definitions/invokeObject" },
-        {
           "type": "array",
           "items": {
             "$ref": "#/definitions/invokeObject"
           }
         }
-      ]
+      },
+      "required": ["src"],
+      "additionalProperties": false
     },
     "guardObject": {
       "type": "object",
@@ -413,7 +449,8 @@
           "type": "object",
           "description": "Guard parameters"
         }
-      }
+      },
+      "required": ["type"]
     },
     "metaObject": {
       "type": "object",

@@ -1,11 +1,11 @@
 {
-  "name": "@statelyai/specification",
+  "name": "@statelyai/spec",
   "version": "1.0.0",
   "zshy": "./src/index.ts",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "build": "zshy && npm run generate-schema",
     "generate-schema": "tsx src/generate-schema.ts"
   },
@@ -14,8 +14,9 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "typescript": "^5.9.3",
     "tsx": "^4.7.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
     "zshy": "^0.4.3"
   },
   "dependencies": {

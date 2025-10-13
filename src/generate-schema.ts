@@ -6,9 +6,10 @@ import {
   guardSchema,
   invokeSchema,
   machineSchema,
+  metaSchema,
   stateSchema,
   transitionSchema,
-} from './index.js';
+} from './machineSchema';
 
 z.globalRegistry.add(invokeSchema, {
   id: 'Invoke',
@@ -28,6 +29,10 @@ z.globalRegistry.add(transitionSchema, {
 
 z.globalRegistry.add(stateSchema, {
   id: 'State',
+});
+
+z.globalRegistry.add(metaSchema, {
+  id: 'Meta',
 });
 
 // Generate JSON schema from the Zod schema

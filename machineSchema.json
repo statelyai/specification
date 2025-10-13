@@ -3,283 +3,95 @@
   "type": "object",
   "properties": {
     "id": {
+      "description": "The state node ID",
       "type": "string"
     },
     "description": {
+      "description": "The text description of this state node",
       "type": "string"
     },
-    "version": {
-      "type": "string"
+    "type": {
+      "description": "The state type, if not a normal (atomic or compound) state node",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "parallel"
+        },
+        {
+          "type": "string",
+          "const": "history"
+        },
+        {
+          "type": "string",
+          "const": "final"
+        }
+      ]
+    },
+    "entry": {
+      "description": "The entry actions",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Action"
+      }
+    },
+    "exit": {
+      "description": "The exit actions",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Action"
+      }
     },
     "initial": {
+      "description": "The initial child state",
       "type": "string"
     },
-    "states": {
+    "on": {
+      "description": "The transitions",
       "type": "object",
       "propertyNames": {
         "type": "string"
       },
       "additionalProperties": {
-        "$ref": "#/$defs/State"
+        "$ref": "#/$defs/Transition"
       }
+    },
+    "after": {
+      "description": "The delayed transitions that will trigger after the specified delay",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/Transition"
+      }
+    },
+    "always": {
+      "description": "The transitions that will immediately trigger if they are enabled; i.e. their guard evaluates to true",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Transition"
+      }
+    },
+    "invoke": {
+      "description": "The invoked actors that will be spawned when the state is entered",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Invoke"
+      }
+    },
+    "meta": {
+      "description": "The metadata for this state node",
+      "$ref": "#/$defs/Meta"
+    },
+    "states": {
+      "$ref": "#/$defs/__schema0"
+    },
+    "version": {
+      "type": "string"
     }
   },
-  "required": [
-    "initial",
-    "states"
-  ],
   "additionalProperties": false,
   "$defs": {
-    "State": {
-      "id": "State",
-      "anyOf": [
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string",
-              "const": "atomic"
-            },
-            "entry": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "exit": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "on": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "$ref": "#/$defs/Transition"
-              }
-            },
-            "after": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "$ref": "#/$defs/Transition"
-              }
-            },
-            "always": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Transition"
-              }
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string",
-              "const": "compound"
-            },
-            "entry": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "exit": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "initial": {
-              "type": "string"
-            },
-            "states": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "$ref": "#/$defs/State"
-              }
-            },
-            "onDone": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Transition"
-              }
-            },
-            "after": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "$ref": "#/$defs/Transition"
-              }
-            },
-            "always": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Transition"
-              }
-            }
-          },
-          "required": [
-            "initial",
-            "states"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string",
-              "const": "final"
-            },
-            "entry": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "exit": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "output": {}
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string",
-              "const": "history"
-            },
-            "entry": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "exit": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "history": {
-              "type": "string",
-              "enum": [
-                "shallow",
-                "deep"
-              ]
-            },
-            "target": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string",
-              "const": "parallel"
-            },
-            "entry": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "exit": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "states": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "$ref": "#/$defs/State"
-              }
-            },
-            "onDone": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Invoke"
-              }
-            },
-            "after": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "$ref": "#/$defs/Transition"
-              }
-            },
-            "always": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Transition"
-              }
-            }
-          },
-          "required": [
-            "states"
-          ],
-          "additionalProperties": false
-        }
-      ]
-    },
     "Action": {
       "type": "object",
       "properties": {
@@ -319,11 +131,7 @@
           "$ref": "#/$defs/Guard"
         },
         "meta": {
-          "type": "object",
-          "propertyNames": {
-            "type": "string"
-          },
-          "additionalProperties": {}
+          "$ref": "#/$defs/Meta"
         }
       },
       "additionalProperties": false,
@@ -349,6 +157,14 @@
       "additionalProperties": false,
       "id": "Guard"
     },
+    "Meta": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {},
+      "id": "Meta"
+    },
     "Invoke": {
       "type": "object",
       "properties": {
@@ -371,6 +187,106 @@
       ],
       "additionalProperties": false,
       "id": "Invoke"
+    },
+    "__schema0": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/State"
+      }
+    },
+    "State": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The state node ID",
+          "type": "string"
+        },
+        "description": {
+          "description": "The text description of this state node",
+          "type": "string"
+        },
+        "type": {
+          "description": "The state type, if not a normal (atomic or compound) state node",
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "parallel"
+            },
+            {
+              "type": "string",
+              "const": "history"
+            },
+            {
+              "type": "string",
+              "const": "final"
+            }
+          ]
+        },
+        "entry": {
+          "description": "The entry actions",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        },
+        "exit": {
+          "description": "The exit actions",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        },
+        "initial": {
+          "description": "The initial child state",
+          "type": "string"
+        },
+        "on": {
+          "description": "The transitions",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/Transition"
+          }
+        },
+        "after": {
+          "description": "The delayed transitions that will trigger after the specified delay",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/Transition"
+          }
+        },
+        "always": {
+          "description": "The transitions that will immediately trigger if they are enabled; i.e. their guard evaluates to true",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Transition"
+          }
+        },
+        "invoke": {
+          "description": "The invoked actors that will be spawned when the state is entered",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Invoke"
+          }
+        },
+        "meta": {
+          "description": "The metadata for this state node",
+          "$ref": "#/$defs/Meta"
+        },
+        "states": {
+          "$ref": "#/$defs/__schema0"
+        }
+      },
+      "additionalProperties": false,
+      "id": "State"
     }
   }
 }

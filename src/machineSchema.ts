@@ -72,13 +72,7 @@ export const stateSchema = z.object({
     .optional()
     .describe('The text description of this state node'),
   type: z
-    .union([
-      z.literal('atomic'),
-      z.literal('compound'),
-      z.literal('parallel'),
-      z.literal('history'),
-      z.literal('final'),
-    ])
+    .union([z.literal('parallel'), z.literal('history'), z.literal('final')])
     .optional()
     .describe(
       'The state type, if not a normal (atomic or compound) state node'

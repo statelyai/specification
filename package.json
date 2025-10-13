@@ -1,6 +1,6 @@
 {
   "name": "@statelyai/spec",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "zshy": "./src/index.ts",
   "description": "The Stately JSON specification for statecharts in XState",
   "main": "./dist/index.js",

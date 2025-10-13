@@ -189,6 +189,7 @@
       "id": "Invoke"
     },
     "__schema0": {
+      "description": "The child states",
       "type": "object",
       "propertyNames": {
         "type": "string"

@@ -33,7 +33,8 @@
     "zod": "^4.1.12"
   },
   "files": [
-    "dist"
+    "dist",
+    "machineSchema.json"
   ],
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

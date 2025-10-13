@@ -2,7 +2,7 @@
   "name": "@statelyai/spec",
   "version": "0.0.1",
   "zshy": "./src/index.ts",
-  "description": "",
+  "description": "The Stately JSON specification for statecharts in XState",
   "main": "./dist/index.js",
   "scripts": {
     "test": "vitest",
@@ -10,9 +10,18 @@
     "generate-schema": "tsx src/generate-schema.ts",
     "prepublish": "npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "stately",
+    "statecharts",
+    "xstate",
+    "json",
+    "specification",
+    "statechart",
+    "state-machine",
+    "workflow"
+  ],
+  "author": "david@stately.ai",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsx": "^4.7.0",

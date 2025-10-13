@@ -50,3 +50,22 @@ test('omni machine', () => {
     },
   });
 });
+
+test('invalid machine', () => {
+  expect(() =>
+    machineSchema.parse({
+      id: 3,
+    })
+  ).toThrowErrorMatchingInlineSnapshot(`
+    [ZodError: [
+      {
+        "expected": "string",
+        "code": "invalid_type",
+        "path": [
+          "id"
+        ],
+        "message": "Invalid input: expected string, received number"
+      }
+    ]]
+  `);
+});

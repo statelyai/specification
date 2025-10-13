@@ -65,32 +65,31 @@ export const finalState = baseState.extend({
   type: z.literal('final').optional(),
 });
 
-export const stateSchema = z.intersection(
-  z.union([
-    atomicState,
-    compoundState,
-    parallelState,
-    historyState,
-    finalState,
-  ]),
-  z.object({
-    get states() {
-      return stateSchema;
-    },
-  })
-);
-
-type Test = z.infer<typeof stateSchema>;
-
-export const machineSchema = z.object({
+export const stateSchema = baseState.extend({
   id: z.string().optional(),
   description: z.string().optional(),
-  version: z.string().optional(),
-  initial: z.string().optional(),
-  states: z.record(z.string(), stateSchema).optional(),
+  type: z
+    .union([
+      z.literal('atomic'),
+      z.literal('compound'),
+      z.literal('parallel'),
+      z.literal('history'),
+      z.literal('final'),
+    ])
+    .optional(),
   entry: z.array(actionSchema).optional(),
   exit: z.array(actionSchema).optional(),
+  initial: z.string().optional(),
+  on: z.record(z.string(), transitionSchema).optional(),
+  after: z.record(z.string(), transitionSchema).optional(),
+  always: z.array(transitionSchema).optional(),
   invoke: z.array(invokeSchema).optional(),
-  on: z.array(transitionSchema).optional(),
   meta: metaSchema.optional(),
+  get states() {
+    return z.record(z.string(), stateSchema).optional();
+  },
+});
+
+export const machineSchema = stateSchema.extend({
+  version: z.string().optional(),
 });

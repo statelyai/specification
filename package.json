@@ -1,13 +1,14 @@
 {
   "name": "@statelyai/spec",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "zshy": "./src/index.ts",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
     "test": "vitest",
     "build": "zshy && npm run generate-schema",
-    "generate-schema": "tsx src/generate-schema.ts"
+    "generate-schema": "tsx src/generate-schema.ts",
+    "prepublish": "npm run build"
   },
   "keywords": [],
   "author": "",

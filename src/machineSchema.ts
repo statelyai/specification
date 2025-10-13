@@ -65,9 +65,12 @@ export const finalState = baseState.extend({
   type: z.literal('final').optional(),
 });
 
-export const stateSchema = baseState.extend({
-  id: z.string().optional(),
-  description: z.string().optional(),
+export const stateSchema = z.object({
+  id: z.string().optional().describe('The state node ID'),
+  description: z
+    .string()
+    .optional()
+    .describe('The text description of this state node'),
   type: z
     .union([
       z.literal('atomic'),
@@ -76,17 +79,41 @@ export const stateSchema = baseState.extend({
       z.literal('history'),
       z.literal('final'),
     ])
-    .optional(),
-  entry: z.array(actionSchema).optional(),
-  exit: z.array(actionSchema).optional(),
-  initial: z.string().optional(),
-  on: z.record(z.string(), transitionSchema).optional(),
-  after: z.record(z.string(), transitionSchema).optional(),
-  always: z.array(transitionSchema).optional(),
-  invoke: z.array(invokeSchema).optional(),
-  meta: metaSchema.optional(),
+    .optional()
+    .describe(
+      'The state type, if not a normal (atomic or compound) state node'
+    ),
+  entry: z.array(actionSchema).optional().describe('The entry actions'),
+  exit: z.array(actionSchema).optional().describe('The exit actions'),
+  initial: z.string().optional().describe('The initial child state'),
+  on: z
+    .record(z.string(), transitionSchema)
+    .optional()
+    .describe('The transitions'),
+  after: z
+    .record(z.string(), transitionSchema)
+    .optional()
+    .describe(
+      'The delayed transitions that will trigger after the specified delay'
+    ),
+  always: z
+    .array(transitionSchema)
+    .optional()
+    .describe(
+      'The transitions that will immediately trigger if they are enabled; i.e. their guard evaluates to true'
+    ),
+  invoke: z
+    .array(invokeSchema)
+    .optional()
+    .describe(
+      'The invoked actors that will be spawned when the state is entered'
+    ),
+  meta: metaSchema.optional().describe('The metadata for this state node'),
   get states() {
-    return z.record(z.string(), stateSchema).optional();
+    return z
+      .record(z.string(), stateSchema)
+      .optional()
+      .describe('The child states');
   },
 });
 

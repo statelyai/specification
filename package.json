@@ -5,7 +5,7 @@
   "description": "The Stately JSON specification for statecharts in XState",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "vitest",
+    "test": "tsx --test",
     "build": "zshy && npm run generate-schema",
     "generate-schema": "tsx src/generate-schema.ts",
     "prepublish": "npm run build"
@@ -26,7 +26,6 @@
     "@types/node": "^22.0.0",
     "tsx": "^4.7.0",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4",
     "zshy": "^0.4.3"
   },
   "dependencies": {

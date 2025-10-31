@@ -1,4 +1,4 @@
-import z, { array } from 'zod';
+import z from 'zod';
 
 export const actionSchema = z.object({
   type: z.string(),
@@ -46,6 +46,11 @@ export const stateSchema = z.object({
     .describe(
       'The state type, if not a normal (atomic or compound) state node'
     ),
+  target: z.string().optional().describe('The target state for history states'),
+  history: z
+    .enum(['shallow', 'deep'])
+    .optional()
+    .describe('The history type for history states'),
   entry: z.array(actionSchema).optional().describe('The entry actions'),
   exit: z.array(actionSchema).optional().describe('The exit actions'),
   initial: z.string().optional().describe('The initial child state'),

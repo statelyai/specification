@@ -10,7 +10,14 @@ import {
   stateSchema,
   transitionSchema,
 } from './machineSchema';
+import {
+  edgeSchema,
+  graphSchema,
+  metaSchema as graphMetaSchema,
+  nodeSchema,
+} from './graphSchema';
 
+// Register machine schema types
 z.globalRegistry.add(invokeSchema, {
   id: 'Invoke',
 });
@@ -35,11 +42,28 @@ z.globalRegistry.add(metaSchema, {
   id: 'Meta',
 });
 
-// Generate JSON schema from the Zod schema
-const jsonSchema = z.toJSONSchema(machineSchema);
+// Register graph schema types
+z.globalRegistry.add(nodeSchema, {
+  id: 'Node',
+});
 
-// Write the JSON schema to a file
-const outputPath = join(process.cwd(), 'machineSchema.json');
-writeFileSync(outputPath, JSON.stringify(jsonSchema, null, 2));
+z.globalRegistry.add(edgeSchema, {
+  id: 'Edge',
+});
 
-console.log(`✅ JSON schema generated successfully at: ${outputPath}`);
+z.globalRegistry.add(graphMetaSchema, {
+  id: 'GraphMeta',
+});
+
+// Generate JSON schema from the Zod schemas
+const machineJsonSchema = z.toJSONSchema(machineSchema);
+const graphJsonSchema = z.toJSONSchema(graphSchema);
+
+// Write the JSON schemas to files
+const machineOutputPath = join(process.cwd(), 'machineSchema.json');
+writeFileSync(machineOutputPath, JSON.stringify(machineJsonSchema, null, 2));
+console.log(`✅ Machine schema generated successfully at: ${machineOutputPath}`);
+
+const graphOutputPath = join(process.cwd(), 'graphSchema.json');
+writeFileSync(graphOutputPath, JSON.stringify(graphJsonSchema, null, 2));
+console.log(`✅ Graph schema generated successfully at: ${graphOutputPath}`);

@@ -27,6 +27,18 @@
         }
       ]
     },
+    "target": {
+      "description": "The target state for history states",
+      "type": "string"
+    },
+    "history": {
+      "description": "The history type for history states",
+      "type": "string",
+      "enum": [
+        "shallow",
+        "deep"
+      ]
+    },
     "entry": {
       "description": "The entry actions",
       "type": "array",
@@ -52,7 +64,17 @@
         "type": "string"
       },
       "additionalProperties": {
-        "$ref": "#/$defs/Transition"
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Transition"
+            }
+          },
+          {
+            "$ref": "#/$defs/Transition"
+          }
+        ]
       }
     },
     "after": {
@@ -62,15 +84,32 @@
         "type": "string"
       },
       "additionalProperties": {
-        "$ref": "#/$defs/Transition"
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Transition"
+            }
+          },
+          {
+            "$ref": "#/$defs/Transition"
+          }
+        ]
       }
     },
     "always": {
       "description": "The transitions that will immediately trigger if they are enabled; i.e. their guard evaluates to true",
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/Transition"
-      }
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Transition"
+          }
+        },
+        {
+          "$ref": "#/$defs/Transition"
+        }
+      ]
     },
     "invoke": {
       "description": "The invoked actors that will be spawned when the state is entered",
@@ -180,6 +219,32 @@
             "type": "string"
           },
           "additionalProperties": {}
+        },
+        "onDone": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Transition"
+              }
+            },
+            {
+              "$ref": "#/$defs/Transition"
+            }
+          ]
+        },
+        "onError": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Transition"
+              }
+            },
+            {
+              "$ref": "#/$defs/Transition"
+            }
+          ]
         }
       },
       "required": [
@@ -226,6 +291,18 @@
             }
           ]
         },
+        "target": {
+          "description": "The target state for history states",
+          "type": "string"
+        },
+        "history": {
+          "description": "The history type for history states",
+          "type": "string",
+          "enum": [
+            "shallow",
+            "deep"
+          ]
+        },
         "entry": {
           "description": "The entry actions",
           "type": "array",
@@ -251,7 +328,17 @@
             "type": "string"
           },
           "additionalProperties": {
-            "$ref": "#/$defs/Transition"
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Transition"
+                }
+              },
+              {
+                "$ref": "#/$defs/Transition"
+              }
+            ]
           }
         },
         "after": {
@@ -261,15 +348,32 @@
             "type": "string"
           },
           "additionalProperties": {
-            "$ref": "#/$defs/Transition"
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Transition"
+                }
+              },
+              {
+                "$ref": "#/$defs/Transition"
+              }
+            ]
           }
         },
         "always": {
           "description": "The transitions that will immediately trigger if they are enabled; i.e. their guard evaluates to true",
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/Transition"
-          }
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Transition"
+              }
+            },
+            {
+              "$ref": "#/$defs/Transition"
+            }
+          ]
         },
         "invoke": {
           "description": "The invoked actors that will be spawned when the state is entered",

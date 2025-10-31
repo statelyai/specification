@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Default edge direction for the graph.",
+      "default": "directed",
+      "type": "string",
+      "enum": [
+        "directed",
+        "undirected"
+      ]
+    },
+    "description": {
+      "description": "Optional description of the graph",
+      "type": "string"
+    },
+    "nodes": {
+      "description": "Nodes in the graph.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Node"
+      }
+    },
+    "edges": {
+      "description": "Edges connecting nodes.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Edge"
+      }
+    }
+  },
+  "required": [
+    "type"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Unique identifier for the node within the document. Required attribute.",
+          "type": "string"
+        },
+        "parentId": {
+          "description": "ID of the parent node for nested graphs.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional description of the node",
+          "type": "string"
+        },
+        "meta": {
+          "description": "Metadata for the node",
+          "$ref": "#/$defs/GraphMeta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "id": "Node"
+    },
+    "GraphMeta": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {},
+      "id": "GraphMeta"
+    },
+    "Edge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Optional unique identifier for the edge",
+          "type": "string"
+        },
+        "sourceId": {
+          "description": "ID of the source node. Required attribute.",
+          "type": "string"
+        },
+        "targetId": {
+          "description": "ID(s) of the target node(s). Single string for regular edges, array for hyperedges.",
+          "anyOf": [
+            {
+              "description": "ID of the target node",
+              "type": "string"
+            },
+            {
+              "description": "IDs of multiple target nodes for hyperedges.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description": "Optional description of the edge",
+          "type": "string"
+        },
+        "meta": {
+          "description": "Metadata for the edge",
+          "$ref": "#/$defs/GraphMeta"
+        }
+      },
+      "required": [
+        "sourceId",
+        "targetId"
+      ],
+      "additionalProperties": false,
+      "id": "Edge"
+    }
+  }
+}

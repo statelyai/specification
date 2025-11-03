@@ -126,3 +126,5 @@ export const finalState = baseState.extend({
 export const machineSchema = stateSchema.extend({
   version: z.string().optional(),
 });
+
+export type StateMachine = z.infer<typeof machineSchema>;

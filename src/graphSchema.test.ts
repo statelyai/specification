@@ -9,39 +9,40 @@ describe('graphSchema', () => {
   });
 
   test('trivial graph', () => {
-    graphSchema.parse({});
+    graphSchema.parse({
+      nodes: [],
+      edges: [],
+    });
   });
 
   test('graph with type', () => {
     graphSchema.parse({
-      type: 'directed',
+      nodes: [],
+      edges: [],
     });
 
     graphSchema.parse({
-      type: 'undirected',
+      nodes: [],
+      edges: [],
     });
   });
 
   test('graph with nodes', () => {
     graphSchema.parse({
-      nodes: [
-        { id: 'n0' },
-        { id: 'n1' },
-      ],
+      nodes: [{ id: 'n0' }, { id: 'n1' }],
+      edges: [],
     });
   });
 
   test('graph with edges', () => {
     graphSchema.parse({
-      edges: [
-        { sourceId: 'n0', targetId: 'n1' },
-      ],
+      nodes: [],
+      edges: [{ name: 'transition', sourceId: 'n0', targetId: 'n1' }],
     });
   });
 
   test('complete graph', () => {
     graphSchema.parse({
-      type: 'directed',
       description: 'A simple directed graph',
       nodes: [
         {
@@ -58,6 +59,7 @@ describe('graphSchema', () => {
       edges: [
         {
           id: 'e0',
+          name: 'connect',
           sourceId: 'n0',
           targetId: 'n1',
           description: 'Transition edge',
@@ -74,13 +76,16 @@ describe('graphSchema', () => {
         { id: 'n1', parentId: 'n0' },
         { id: 'n2', parentId: 'n0' },
       ],
+      edges: [],
     });
   });
 
   test('hyperedge with multiple targets', () => {
     graphSchema.parse({
+      nodes: [],
       edges: [
         {
+          name: 'broadcast',
           sourceId: 'n0',
           targetId: ['n1', 'n2', 'n3'],
           description: 'Hyperedge to multiple nodes',
@@ -100,6 +105,7 @@ describe('graphSchema', () => {
   test('invalid edge without sourceId', () => {
     assert.throws(() =>
       edgeSchema.parse({
+        name: 'test',
         targetId: 'n1',
       })
     );
@@ -108,7 +114,17 @@ describe('graphSchema', () => {
   test('invalid edge without targetId', () => {
     assert.throws(() =>
       edgeSchema.parse({
+        name: 'test',
         sourceId: 'n0',
+      })
+    );
+  });
+
+  test('invalid edge without name', () => {
+    assert.throws(() =>
+      edgeSchema.parse({
+        sourceId: 'n0',
+        targetId: 'n1',
       })
     );
   });
@@ -117,6 +133,8 @@ describe('graphSchema', () => {
     assert.throws(() =>
       graphSchema.parse({
         type: 'invalid',
+        nodes: [],
+        edges: [],
       })
     );
   });

@@ -4,57 +4,429 @@ import { machineSchema } from './machineSchema';
 import z from 'zod';
 
 describe('machineSchema', () => {
-  test('machineSchema is defined', () => {
-    assert.ok(machineSchema);
-  });
-
   test('trivial machine', () => {
     machineSchema.parse({});
   });
 
-  test('all machine properties', () => {
+  test('all basic properties', () => {
     machineSchema.parse({
       id: 'test',
       description: 'test',
-      version: 'test',
-      initial: 'test',
+      version: '1.0.0',
+      initial: 'idle',
       states: {
-        test: {},
+        idle: {},
       },
     });
   });
 
-  test('omni machine', () => {
+  test('invalid machine', () => {
+    assert.throws(() => machineSchema.parse({ id: 3 }));
+  });
+
+  // --- queryLanguage ---
+
+  test('queryLanguage', () => {
+    machineSchema.parse({ queryLanguage: 'jsonata' });
+    machineSchema.parse({ queryLanguage: 'jmespath' });
+    machineSchema.parse({ queryLanguage: 'jsonpath' });
+  });
+
+  test('invalid queryLanguage', () => {
+    assert.throws(() => machineSchema.parse({ queryLanguage: 'sql' }));
+  });
+
+  // --- Context ---
+
+  test('context with initial values', () => {
     machineSchema.parse({
-      id: 'test',
-      description: 'test',
-      version: 'test',
-      initial: 'test',
+      context: { count: 0, name: '', items: [] },
+    });
+  });
+
+  // --- Schemas ---
+
+  test('schemas for context and events', () => {
+    machineSchema.parse({
+      context: { count: 0 },
+      schemas: {
+        context: {
+          count: { type: 'number' },
+        },
+        events: {
+          INCREMENT: {
+            amount: { type: 'number' },
+          },
+        },
+      },
+    });
+  });
+
+  // --- Input ---
+
+  test('input JSON Schema', () => {
+    machineSchema.parse({
+      input: {
+        type: 'object',
+        properties: {
+          orderId: { type: 'string' },
+        },
+      },
+    });
+  });
+
+  // --- Expressions ---
+
+  test('assign action with expressions', () => {
+    machineSchema.parse({
+      initial: 'active',
       states: {
-        atomic: {
-          after: {
-            1000: {
-              target: 'compound',
+        active: {
+          entry: [
+            {
+              type: 'assign',
+              params: {
+                count: '{% $context.count + 1 %}',
+                name: 'literal string',
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('inline guard expression', () => {
+    machineSchema.parse({
+      initial: 'active',
+      states: {
+        active: {
+          on: {
+            NEXT: {
+              target: 'done',
+              guard: '{% $context.count > 0 %}',
+            },
+          },
+        },
+        done: { type: 'final' },
+      },
+    });
+  });
+
+  test('named guard object', () => {
+    machineSchema.parse({
+      initial: 'active',
+      states: {
+        active: {
+          on: {
+            NEXT: {
+              target: 'done',
+              guard: { type: 'isReady', params: { threshold: 5 } },
+            },
+          },
+        },
+        done: { type: 'final' },
+      },
+    });
+  });
+
+  // --- Transition shorthand ---
+
+  test('string transition shorthand', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          on: {
+            GO: 'b',
+          },
+        },
+        b: {},
+      },
+    });
+  });
+
+  test('transition with order', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          on: {
+            GO: [
+              { target: 'b', guard: '{% $context.x %}', order: 1 },
+              { target: 'c', order: 2 },
+            ],
+          },
+        },
+        b: {},
+        c: {},
+      },
+    });
+  });
+
+  // --- Built-in actions ---
+
+  test('raise action', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          entry: [{ type: 'raise', params: { event: 'DONE' } }],
+        },
+      },
+    });
+  });
+
+  test('sendTo action', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          entry: [
+            {
+              type: 'sendTo',
+              params: {
+                actorRef: '{% $system.worker %}',
+                event: '{% { "type": "PING" } %}',
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('log action', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          entry: [
+            { type: 'log', params: { message: '{% "count: " & $context.count %}' } },
+            { type: 'log' },
+          ],
+        },
+      },
+    });
+  });
+
+  test('custom action', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          entry: [
+            { type: 'myCustomAction', params: { foo: 'bar' } },
+          ],
+        },
+      },
+    });
+  });
+
+  // --- Tags ---
+
+  test('state tags', () => {
+    machineSchema.parse({
+      initial: 'loading',
+      states: {
+        loading: { tags: ['busy', 'pending'] },
+        idle: { tags: ['ready'] },
+      },
+    });
+  });
+
+  // --- Output ---
+
+  test('final state output', () => {
+    machineSchema.parse({
+      initial: 'active',
+      states: {
+        active: {
+          on: { DONE: 'complete' },
+        },
+        complete: {
+          type: 'final',
+          output: '{% { "result": $context.data } %}',
+        },
+      },
+    });
+  });
+
+  test('final state static output', () => {
+    machineSchema.parse({
+      initial: 'active',
+      states: {
+        active: { on: { DONE: 'complete' } },
+        complete: {
+          type: 'final',
+          output: { status: 'ok' },
+        },
+      },
+    });
+  });
+
+  // --- Invoke extensions ---
+
+  test('invoke with input, onSnapshot, timeout', () => {
+    machineSchema.parse({
+      initial: 'processing',
+      states: {
+        processing: {
+          invoke: [
+            {
+              id: 'worker',
+              src: 'processOrder',
+              input: '{% { "orderId": $context.orderId } %}',
+              timeout: 'PT30S',
+              heartbeat: 'PT5S',
+              onDone: { target: 'done' },
+              onError: [
+                { target: 'processing', guard: '{% $context.retries < 3 %}' },
+                { target: 'failed' },
+              ],
+              onSnapshot: {
+                actions: [
+                  {
+                    type: 'assign',
+                    params: { progress: '{% $event.snapshot %}' },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        done: { type: 'final' },
+        failed: { type: 'final' },
+      },
+    });
+  });
+
+  // --- History states ---
+
+  test('history state', () => {
+    machineSchema.parse({
+      initial: 'active',
+      states: {
+        active: {
+          initial: 'a',
+          states: {
+            a: {},
+            b: {},
+            hist: { type: 'history', history: 'deep', target: 'a' },
+          },
+        },
+      },
+    });
+  });
+
+  // --- Parallel states ---
+
+  test('parallel state', () => {
+    machineSchema.parse({
+      type: 'parallel',
+      states: {
+        upload: {
+          initial: 'idle',
+          states: { idle: {}, uploading: {} },
+        },
+        download: {
+          initial: 'idle',
+          states: { idle: {}, downloading: {} },
+        },
+      },
+    });
+  });
+
+  // --- Full integration ---
+
+  test('full order flow machine', () => {
+    machineSchema.parse({
+      version: '1.0.0',
+      id: 'orderFlow',
+      queryLanguage: 'jsonata',
+      input: {
+        type: 'object',
+        properties: { orderId: { type: 'string' } },
+      },
+      context: { retries: 0, result: null, items: [] },
+      schemas: {
+        context: {
+          retries: { type: 'number' },
+          result: {},
+          items: { type: 'array' },
+        },
+        events: {
+          SUBMIT: { paymentMethod: { type: 'string' } },
+        },
+      },
+      initial: 'pending',
+      states: {
+        pending: {
+          tags: ['idle'],
+          entry: [
+            {
+              type: 'assign',
+              params: { retries: '{% $context.retries + 1 %}' },
+            },
+          ],
+          on: {
+            SUBMIT: {
+              target: 'processing',
+              guard: '{% $context.items.length > 0 %}',
               actions: [
                 {
                   type: 'log',
                   params: {
-                    message: 'Hello, world!',
+                    message: "{% 'Order ' & $event.orderId %}",
                   },
                 },
               ],
             },
+            CANCEL: 'cancelled',
           },
         },
+        processing: {
+          invoke: [
+            {
+              id: 'processOrder',
+              src: 'orderProcessor',
+              input:
+                "{% { 'orderId': $context.orderId, 'items': $context.items } %}",
+              timeout: 'PT30S',
+              onDone: {
+                target: 'complete',
+                actions: [
+                  {
+                    type: 'assign',
+                    params: { result: '{% $event.output %}' },
+                  },
+                ],
+              },
+              onError: [
+                {
+                  target: 'pending',
+                  guard: '{% $context.retries < 3 %}',
+                },
+                { target: 'failed' },
+              ],
+              onSnapshot: {
+                actions: [
+                  {
+                    type: 'assign',
+                    params: { progress: '{% $event.snapshot %}' },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        complete: {
+          type: 'final',
+          output: "{% { 'result': $context.result } %}",
+        },
+        cancelled: { type: 'final' },
+        failed: { type: 'final' },
       },
     } satisfies z.infer<typeof machineSchema>);
-  });
-
-  test('invalid machine', () => {
-    assert.throws(() =>
-      machineSchema.parse({
-        id: 3,
-      })
-    );
   });
 });

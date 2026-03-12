@@ -1,0 +1,945 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The state node ID",
+      "type": "string"
+    },
+    "description": {
+      "description": "The text description of this state node",
+      "type": "string"
+    },
+    "type": {
+      "description": "The state type, if not a normal (atomic or compound) state node",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "parallel"
+        },
+        {
+          "type": "string",
+          "const": "history"
+        },
+        {
+          "type": "string",
+          "const": "final"
+        }
+      ]
+    },
+    "target": {
+      "description": "The target state for history states",
+      "type": "string"
+    },
+    "history": {
+      "description": "The history type for history states",
+      "type": "string",
+      "enum": [
+        "shallow",
+        "deep"
+      ]
+    },
+    "entry": {
+      "description": "The entry actions",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Action"
+      }
+    },
+    "exit": {
+      "description": "The exit actions",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Action"
+      }
+    },
+    "initial": {
+      "description": "The initial child state",
+      "type": "string"
+    },
+    "on": {
+      "description": "The transitions",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Action"
+                  }
+                },
+                "description": {
+                  "type": "string"
+                },
+                "guard": {
+                  "$ref": "#/$defs/Guard"
+                },
+                "meta": {
+                  "$ref": "#/$defs/Meta"
+                },
+                "order": {
+                  "description": "Explicit transition priority",
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          {
+            "$ref": "#/$defs/Transition"
+          }
+        ]
+      }
+    },
+    "after": {
+      "description": "The delayed transitions that will trigger after the specified delay",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Action"
+                  }
+                },
+                "description": {
+                  "type": "string"
+                },
+                "guard": {
+                  "$ref": "#/$defs/Guard"
+                },
+                "meta": {
+                  "$ref": "#/$defs/Meta"
+                },
+                "order": {
+                  "description": "Explicit transition priority",
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          {
+            "$ref": "#/$defs/Transition"
+          }
+        ]
+      }
+    },
+    "always": {
+      "description": "Eventless transitions that trigger immediately when their guard is true",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "string"
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Action"
+                }
+              },
+              "description": {
+                "type": "string"
+              },
+              "guard": {
+                "$ref": "#/$defs/Guard"
+              },
+              "meta": {
+                "$ref": "#/$defs/Meta"
+              },
+              "order": {
+                "description": "Explicit transition priority",
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        {
+          "$ref": "#/$defs/Transition"
+        }
+      ]
+    },
+    "invoke": {
+      "description": "Invoked actors spawned when the state is entered",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Invoke"
+      }
+    },
+    "tags": {
+      "description": "Tags for categorizing this state",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "output": {
+      "description": "Output data for final states",
+      "anyOf": [
+        {
+          "description": "An expression string delimited by {% %}",
+          "type": "string",
+          "pattern": "^\\{%[\\s\\S]*%\\}$"
+        },
+        {}
+      ]
+    },
+    "meta": {
+      "description": "The metadata for this state node",
+      "$ref": "#/$defs/Meta"
+    },
+    "states": {
+      "$ref": "#/$defs/__schema0"
+    },
+    "version": {
+      "description": "The machine version",
+      "type": "string"
+    },
+    "queryLanguage": {
+      "description": "The expression language used for evaluating expressions in the machine",
+      "type": "string",
+      "enum": [
+        "jsonata",
+        "jmespath",
+        "jsonpath"
+      ]
+    },
+    "context": {
+      "description": "Initial context values",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "input": {
+      "description": "JSON Schema for machine input",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "schemas": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "description": "JSON Schema definitions for each context property",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "description": "A JSON Schema property definition",
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          }
+        },
+        "events": {
+          "description": "JSON Schema definitions for each event type",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "description": "A JSON Schema property definition",
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Action": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "assign"
+            },
+            "params": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "description": "An expression string delimited by {% %}",
+                    "type": "string",
+                    "pattern": "^\\{%[\\s\\S]*%\\}$"
+                  },
+                  {}
+                ]
+              }
+            }
+          },
+          "required": [
+            "type",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "raise"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "anyOf": [
+                    {
+                      "description": "An expression string delimited by {% %}",
+                      "type": "string",
+                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                    },
+                    {}
+                  ]
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "sendTo"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "actorRef": {
+                  "anyOf": [
+                    {
+                      "description": "An expression string delimited by {% %}",
+                      "type": "string",
+                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "event": {
+                  "anyOf": [
+                    {
+                      "description": "An expression string delimited by {% %}",
+                      "type": "string",
+                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                    },
+                    {}
+                  ]
+                },
+                "delay": {
+                  "anyOf": [
+                    {
+                      "description": "An expression string delimited by {% %}",
+                      "type": "string",
+                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "actorRef",
+                "event"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "log"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "anyOf": [
+                    {
+                      "description": "An expression string delimited by {% %}",
+                      "type": "string",
+                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "message"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "params": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "id": "Action"
+    },
+    "Guard": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "params": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "An expression string delimited by {% %}",
+          "type": "string",
+          "pattern": "^\\{%[\\s\\S]*%\\}$"
+        }
+      ],
+      "id": "Guard"
+    },
+    "Meta": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {},
+      "id": "Meta"
+    },
+    "Transition": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Action"
+              }
+            },
+            "description": {
+              "type": "string"
+            },
+            "guard": {
+              "$ref": "#/$defs/Guard"
+            },
+            "meta": {
+              "$ref": "#/$defs/Meta"
+            },
+            "order": {
+              "description": "Explicit transition priority",
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        }
+      ],
+      "id": "Transition"
+    },
+    "Invoke": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "src": {
+          "type": "string"
+        },
+        "input": {
+          "description": "Input passed to the invoked actor",
+          "anyOf": [
+            {
+              "description": "An expression string delimited by {% %}",
+              "type": "string",
+              "pattern": "^\\{%[\\s\\S]*%\\}$"
+            },
+            {}
+          ]
+        },
+        "meta": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        "onDone": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/Action"
+                    }
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "guard": {
+                    "$ref": "#/$defs/Guard"
+                  },
+                  "meta": {
+                    "$ref": "#/$defs/Meta"
+                  },
+                  "order": {
+                    "description": "Explicit transition priority",
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            {
+              "$ref": "#/$defs/Transition"
+            }
+          ]
+        },
+        "onError": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/Action"
+                    }
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "guard": {
+                    "$ref": "#/$defs/Guard"
+                  },
+                  "meta": {
+                    "$ref": "#/$defs/Meta"
+                  },
+                  "order": {
+                    "description": "Explicit transition priority",
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            {
+              "$ref": "#/$defs/Transition"
+            }
+          ]
+        },
+        "onSnapshot": {
+          "description": "Transitions triggered when the invoked actor emits a snapshot",
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/Action"
+                    }
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "guard": {
+                    "$ref": "#/$defs/Guard"
+                  },
+                  "meta": {
+                    "$ref": "#/$defs/Meta"
+                  },
+                  "order": {
+                    "description": "Explicit transition priority",
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            {
+              "$ref": "#/$defs/Transition"
+            }
+          ]
+        },
+        "timeout": {
+          "description": "ISO 8601 duration for invocation timeout",
+          "type": "string"
+        },
+        "heartbeat": {
+          "description": "ISO 8601 duration for heartbeat interval",
+          "type": "string"
+        }
+      },
+      "required": [
+        "src"
+      ],
+      "additionalProperties": false,
+      "id": "Invoke"
+    },
+    "__schema0": {
+      "description": "The child states",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/State"
+      }
+    },
+    "State": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The state node ID",
+          "type": "string"
+        },
+        "description": {
+          "description": "The text description of this state node",
+          "type": "string"
+        },
+        "type": {
+          "description": "The state type, if not a normal (atomic or compound) state node",
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "parallel"
+            },
+            {
+              "type": "string",
+              "const": "history"
+            },
+            {
+              "type": "string",
+              "const": "final"
+            }
+          ]
+        },
+        "target": {
+          "description": "The target state for history states",
+          "type": "string"
+        },
+        "history": {
+          "description": "The history type for history states",
+          "type": "string",
+          "enum": [
+            "shallow",
+            "deep"
+          ]
+        },
+        "entry": {
+          "description": "The entry actions",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        },
+        "exit": {
+          "description": "The exit actions",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        },
+        "initial": {
+          "description": "The initial child state",
+          "type": "string"
+        },
+        "on": {
+          "description": "The transitions",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "target": {
+                      "type": "string"
+                    },
+                    "actions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/Action"
+                      }
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "guard": {
+                      "$ref": "#/$defs/Guard"
+                    },
+                    "meta": {
+                      "$ref": "#/$defs/Meta"
+                    },
+                    "order": {
+                      "description": "Explicit transition priority",
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              {
+                "$ref": "#/$defs/Transition"
+              }
+            ]
+          }
+        },
+        "after": {
+          "description": "The delayed transitions that will trigger after the specified delay",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "target": {
+                      "type": "string"
+                    },
+                    "actions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/Action"
+                      }
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "guard": {
+                      "$ref": "#/$defs/Guard"
+                    },
+                    "meta": {
+                      "$ref": "#/$defs/Meta"
+                    },
+                    "order": {
+                      "description": "Explicit transition priority",
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              {
+                "$ref": "#/$defs/Transition"
+              }
+            ]
+          }
+        },
+        "always": {
+          "description": "Eventless transitions that trigger immediately when their guard is true",
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/Action"
+                    }
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "guard": {
+                    "$ref": "#/$defs/Guard"
+                  },
+                  "meta": {
+                    "$ref": "#/$defs/Meta"
+                  },
+                  "order": {
+                    "description": "Explicit transition priority",
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            {
+              "$ref": "#/$defs/Transition"
+            }
+          ]
+        },
+        "invoke": {
+          "description": "Invoked actors spawned when the state is entered",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Invoke"
+          }
+        },
+        "tags": {
+          "description": "Tags for categorizing this state",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "output": {
+          "description": "Output data for final states",
+          "anyOf": [
+            {
+              "description": "An expression string delimited by {% %}",
+              "type": "string",
+              "pattern": "^\\{%[\\s\\S]*%\\}$"
+            },
+            {}
+          ]
+        },
+        "meta": {
+          "description": "The metadata for this state node",
+          "$ref": "#/$defs/Meta"
+        },
+        "states": {
+          "$ref": "#/$defs/__schema0"
+        }
+      },
+      "additionalProperties": false,
+      "id": "State"
+    }
+  }
+}

@@ -5,7 +5,11 @@ function normalizeTransitions(
   transitions: any
 ): Array<{ target?: string; description?: string; meta?: any }> {
   if (!transitions) return [];
-  if (Array.isArray(transitions)) return transitions;
+  if (typeof transitions === 'string') return [{ target: transitions }];
+  if (Array.isArray(transitions))
+    return transitions.map((t) =>
+      typeof t === 'string' ? { target: t } : t
+    );
   return [transitions];
 }
 
@@ -23,11 +27,16 @@ export function machineToGraph(machine: StateMachine): Graph {
     const nodeId = parentId ? `${parentId}.${stateKey}` : stateKey;
 
     // Add node
+    const nodeMeta = {
+      ...state.meta,
+      ...(state.tags ? { tags: state.tags } : {}),
+      ...(state.output !== undefined ? { output: state.output } : {}),
+    };
     nodes.push({
       id: nodeId,
       parentId,
       description: state.description,
-      meta: state.meta,
+      meta: Object.keys(nodeMeta).length > 0 ? nodeMeta : undefined,
     });
 
     // Handle initial transition
@@ -121,6 +130,20 @@ export function machineToGraph(machine: StateMachine): Graph {
                 sourceId: nodeId,
                 targetId: t.target,
                 description: `onError: ${inv.src}`,
+                meta: t.meta,
+              });
+            }
+          }
+        }
+        if (inv.onSnapshot) {
+          const transitions = normalizeTransitions(inv.onSnapshot);
+          for (const t of transitions) {
+            if (t.target) {
+              edges.push({
+                name: `${inv.src}.onSnapshot`,
+                sourceId: nodeId,
+                targetId: t.target,
+                description: `onSnapshot: ${inv.src}`,
                 meta: t.meta,
               });
             }

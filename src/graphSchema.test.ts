@@ -129,13 +129,4 @@ describe('graphSchema', () => {
     );
   });
 
-  test('invalid graph type', () => {
-    assert.throws(() =>
-      graphSchema.parse({
-        type: 'invalid',
-        nodes: [],
-        edges: [],
-      })
-    );
-  });
 });

@@ -1,12 +1,13 @@
 {
   "name": "@statelyai/spec",
-  "version": "0.0.2",
-  "zshy": "./src/index.ts",
-  "description": "The Stately JSON specification for statecharts in XState",
-  "main": "./dist/index.js",
+  "version": "0.1.0",
+  "description": "The Stately JSON specification for statecharts and workflows",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "scripts": {
     "test": "tsx --test",
-    "build": "zshy && npm run generate-schema",
+    "build": "tsdown && npm run generate-schema",
     "generate-schema": "tsx src/generate-schema.ts",
     "prepublish": "npm run build"
   },
@@ -24,24 +25,24 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsdown": "^0.21.2",
     "tsx": "^4.7.0",
-    "typescript": "^5.9.3",
-    "zshy": "^0.4.3"
+    "typescript": "^5.9.3"
   },
-  "dependencies": {
-    "zod": "^4.1.12"
+  "peerDependencies": {
+    "zod": ">=4.0.0"
   },
   "files": [
     "dist",
-    "machineSchema.json"
+    "schemas"
   ],
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
+      "require": "./dist/index.cjs"
+    },
+    "./machine.json": "./schemas/machine.json",
+    "./graph.json": "./schemas/graph.json"
   }
 }

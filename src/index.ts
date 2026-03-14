@@ -10,6 +10,8 @@ export {
   raiseActionSchema,
   sendToActionSchema,
   logActionSchema,
+  emitActionSchema,
+  retrySchema,
   customActionSchema,
   guardSchema,
   namedGuardSchema,
@@ -24,3 +26,11 @@ export {
 } from './machineSchema';
 export type { StateMachine } from './machineSchema';
 export { graphSchema, nodeSchema, edgeSchema } from './graphSchema';
+export {
+  toXStateConfig,
+  toXStateMachine,
+  isExpression,
+  stripDelimiters,
+  parseISO8601Duration,
+} from './toXState';
+export type { ExpressionEvaluator } from './toXState';

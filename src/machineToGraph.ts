@@ -5,11 +5,7 @@ function normalizeTransitions(
   transitions: any
 ): Array<{ target?: string; description?: string; meta?: any }> {
   if (!transitions) return [];
-  if (typeof transitions === 'string') return [{ target: transitions }];
-  if (Array.isArray(transitions))
-    return transitions.map((t) =>
-      typeof t === 'string' ? { target: t } : t
-    );
+  if (Array.isArray(transitions)) return transitions;
   return [transitions];
 }
 

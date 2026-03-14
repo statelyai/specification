@@ -7,6 +7,7 @@
   "types": "./dist/index.d.mts",
   "scripts": {
     "test": "tsx --test",
+    "typecheck": "tsc --noEmit",
     "build": "tsdown && npm run generate-schema",
     "generate-schema": "tsx src/generate-schema.ts",
     "prepublish": "npm run build"
@@ -24,13 +25,31 @@
   "author": "david@stately.ai",
   "license": "MIT",
   "devDependencies": {
+    "@types/jmespath": "^0.15.2",
     "@types/node": "^22.0.0",
+    "jmespath": "^0.16.0",
+    "jsonata": "^2.1.0",
+    "jsonpath-plus": "^10.4.0",
     "tsdown": "^0.21.2",
     "tsx": "^4.7.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
+    "jsonata": ">=2.0.0",
+    "jmespath": ">=0.16.0",
+    "jsonpath-plus": ">=7.0.0",
     "zod": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "jsonata": {
+      "optional": true
+    },
+    "jmespath": {
+      "optional": true
+    },
+    "jsonpath-plus": {
+      "optional": true
+    }
   },
   "files": [
     "dist",
@@ -42,7 +61,25 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
+    "./jsonata": {
+      "types": "./dist/jsonata.d.mts",
+      "import": "./dist/jsonata.mjs",
+      "require": "./dist/jsonata.cjs"
+    },
+    "./jmespath": {
+      "types": "./dist/jmespath.d.mts",
+      "import": "./dist/jmespath.mjs",
+      "require": "./dist/jmespath.cjs"
+    },
+    "./jsonpath": {
+      "types": "./dist/jsonpath.d.mts",
+      "import": "./dist/jsonpath.mjs",
+      "require": "./dist/jsonpath.cjs"
+    },
     "./machine.json": "./schemas/machine.json",
     "./graph.json": "./schemas/graph.json"
+  },
+  "dependencies": {
+    "xstate": "^5.28.0"
   }
 }

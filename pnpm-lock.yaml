@@ -8,13 +8,28 @@ importers:
 
   .:
     dependencies:
+      xstate:
+        specifier: ^5.28.0
+        version: 5.28.0
       zod:
         specifier: '>=4.0.0'
         version: 4.1.12
     devDependencies:
+      '@types/jmespath':
+        specifier: ^0.15.2
+        version: 0.15.2
       '@types/node':
         specifier: ^22.0.0
         version: 22.18.9
+      jmespath:
+        specifier: ^0.16.0
+        version: 0.16.0
+      jsonata:
+        specifier: ^2.1.0
+        version: 2.1.0
+      jsonpath-plus:
+        specifier: ^10.4.0
+        version: 10.4.0
       tsdown:
         specifier: ^0.21.2
         version: 0.21.2(typescript@5.9.3)
@@ -226,6 +241,18 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==, tarball: https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz}
 
+  '@jsep-plugin/assignment@1.3.0':
+    resolution: {integrity: sha512-VVgV+CXrhbMI3aSusQyclHkenWSAm95WaiKrMxRFam3JSUiIaQjoMIw2sEs/OX4XifnqeQUN4DYbJjlA8EfktQ==, tarball: https://registry.npmjs.org/@jsep-plugin/assignment/-/assignment-1.3.0.tgz}
+    engines: {node: '>= 10.16.0'}
+    peerDependencies:
+      jsep: ^0.4.0||^1.0.0
+
+  '@jsep-plugin/regex@1.0.4':
+    resolution: {integrity: sha512-q7qL4Mgjs1vByCaTnDFcBnV9HS7GVPJX5vyVoCgZHNSC9rjwIlmbXG5sUuorR5ndfHAIlJ8pVStxvjXHbNvtUg==, tarball: https://registry.npmjs.org/@jsep-plugin/regex/-/regex-1.0.4.tgz}
+    engines: {node: '>= 10.16.0'}
+    peerDependencies:
+      jsep: ^0.4.0||^1.0.0
+
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==, tarball: https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.1.1.tgz}
 
@@ -339,6 +366,9 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==, tarball: https://registry.npmjs.org/@types/estree/-/estree-1.0.8.tgz}
 
+  '@types/jmespath@0.15.2':
+    resolution: {integrity: sha512-pegh49FtNsC389Flyo9y8AfkVIZn9MMPE9yJrO9svhq6Fks2MwymULWjZqySuxmctd3ZH4/n7Mr98D+1Qo5vGA==, tarball: https://registry.npmjs.org/@types/jmespath/-/jmespath-0.15.2.tgz}
+
   '@types/jsesc@2.5.1':
     resolution: {integrity: sha512-9VN+6yxLOPLOav+7PwjZbxiID2bVaeq0ED4qSQmdQTdjnXJSaCVKTR58t15oqH1H5t8Ng2ZX1SabJVoN9Q34bw==, tarball: https://registry.npmjs.org/@types/jsesc/-/jsesc-2.5.1.tgz}
 
@@ -411,9 +441,26 @@ packages:
     resolution: {integrity: sha512-B6Lc2s6yApwnD2/pMzFh/d5AVjdsDXjgkeJ766FmFuJELIGHNycKRj+l3A39yZPM4CchqNCB4RITEAYB1KUM6A==, tarball: https://registry.npmjs.org/import-without-cache/-/import-without-cache-0.2.5.tgz}
     engines: {node: '>=20.19.0'}
 
+  jmespath@0.16.0:
+    resolution: {integrity: sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==, tarball: https://registry.npmjs.org/jmespath/-/jmespath-0.16.0.tgz}
+    engines: {node: '>= 0.6.0'}
+
+  jsep@1.4.0:
+    resolution: {integrity: sha512-B7qPcEVE3NVkmSJbaYxvv4cHkVW7DQsZz13pUMrfS8z8Q/BuShN+gcTXrUlPiGqM2/t/EEaI030bpxMqY8gMlw==, tarball: https://registry.npmjs.org/jsep/-/jsep-1.4.0.tgz}
+    engines: {node: '>= 10.16.0'}
+
   jsesc@3.1.0:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==, tarball: https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz}
     engines: {node: '>=6'}
+    hasBin: true
+
+  jsonata@2.1.0:
+    resolution: {integrity: sha512-OCzaRMK8HobtX8fp37uIVmL8CY1IGc/a6gLsDqz3quExFR09/U78HUzWYr7T31UEB6+Eu0/8dkVD5fFDOl9a8w==, tarball: https://registry.npmjs.org/jsonata/-/jsonata-2.1.0.tgz}
+    engines: {node: '>= 8'}
+
+  jsonpath-plus@10.4.0:
+    resolution: {integrity: sha512-T92WWatJXmhBbKsgH/0hl+jxjdXrifi5IKeMY02DWggRxX0UElcbVzPlmgLTbvsPeW1PasQ6xE2Q75stkhGbsA==, tarball: https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-10.4.0.tgz}
+    engines: {node: '>=18.0.0'}
     hasBin: true
 
   obug@2.1.1:
@@ -529,6 +576,9 @@ packages:
     peerDependenciesMeta:
       synckit:
         optional: true
+
+  xstate@5.28.0:
+    resolution: {integrity: sha512-Iaqq6ZrUzqeUtA3hC5LQKZfR8ZLzEFTImMHJM3jWEdVvXWdKvvVLXZEiNQWm3SCA9ZbEou/n5rcsna1wb9t28A==, tarball: https://registry.npmjs.org/xstate/-/xstate-5.28.0.tgz}
 
   zod@4.1.12:
     resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==, tarball: https://registry.npmjs.org/zod/-/zod-4.1.12.tgz}
@@ -665,6 +715,14 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@jsep-plugin/assignment@1.3.0(jsep@1.4.0)':
+    dependencies:
+      jsep: 1.4.0
+
+  '@jsep-plugin/regex@1.0.4(jsep@1.4.0)':
+    dependencies:
+      jsep: 1.4.0
+
   '@napi-rs/wasm-runtime@1.1.1':
     dependencies:
       '@emnapi/core': 1.8.1
@@ -733,6 +791,8 @@ snapshots:
     optional: true
 
   '@types/estree@1.0.8': {}
+
+  '@types/jmespath@0.15.2': {}
 
   '@types/jsesc@2.5.1': {}
 
@@ -810,7 +870,19 @@ snapshots:
 
   import-without-cache@0.2.5: {}
 
+  jmespath@0.16.0: {}
+
+  jsep@1.4.0: {}
+
   jsesc@3.1.0: {}
+
+  jsonata@2.1.0: {}
+
+  jsonpath-plus@10.4.0:
+    dependencies:
+      '@jsep-plugin/assignment': 1.3.0(jsep@1.4.0)
+      '@jsep-plugin/regex': 1.0.4(jsep@1.4.0)
+      jsep: 1.4.0
 
   obug@2.1.1: {}
 
@@ -920,5 +992,7 @@ snapshots:
   unrun@0.2.32:
     dependencies:
       rolldown: 1.0.0-rc.9
+
+  xstate@5.28.0: {}
 
   zod@4.1.12: {}

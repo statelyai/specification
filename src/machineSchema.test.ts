@@ -84,9 +84,9 @@ describe('machineSchema', () => {
         active: {
           entry: [
             {
-              type: 'assign',
+              type: 'xstate.assign',
               params: {
-                count: '{% $context.count + 1 %}',
+                count: '{{ $context.count + 1 }}',
                 name: 'literal string',
               },
             },
@@ -104,7 +104,7 @@ describe('machineSchema', () => {
           on: {
             NEXT: {
               target: 'done',
-              guard: '{% $context.count > 0 %}',
+              guard: '{{ $context.count > 0 }}',
             },
           },
         },
@@ -130,18 +130,66 @@ describe('machineSchema', () => {
     });
   });
 
-  // --- Transition shorthand ---
+  // --- Transition object ---
 
-  test('string transition shorthand', () => {
+  test('transition object', () => {
     machineSchema.parse({
       initial: 'a',
       states: {
         a: {
           on: {
-            GO: 'b',
+            GO: { target: 'b' },
           },
         },
         b: {},
+      },
+    });
+  });
+
+  test('string transition shorthand rejected', () => {
+    assert.throws(() =>
+      machineSchema.parse({
+        initial: 'a',
+        states: {
+          a: {
+            on: {
+              GO: 'b',
+            },
+          },
+          b: {},
+        },
+      })
+    );
+  });
+
+  test('transition with context shorthand', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          on: {
+            INC: {
+              target: 'a',
+              context: { count: '{{ context.count + 1 }}' },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('transition with context shorthand and static value', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          on: {
+            RESET: {
+              target: 'a',
+              context: { count: 0, name: 'default' },
+            },
+          },
+        },
       },
     });
   });
@@ -153,7 +201,7 @@ describe('machineSchema', () => {
         a: {
           on: {
             GO: [
-              { target: 'b', guard: '{% $context.x %}', order: 1 },
+              { target: 'b', guard: '{{ $context.x }}', order: 1 },
               { target: 'c', order: 2 },
             ],
           },
@@ -171,7 +219,7 @@ describe('machineSchema', () => {
       initial: 'a',
       states: {
         a: {
-          entry: [{ type: 'raise', params: { event: 'DONE' } }],
+          entry: [{ type: 'xstate.raise', params: { event: 'DONE' } }],
         },
       },
     });
@@ -184,10 +232,10 @@ describe('machineSchema', () => {
         a: {
           entry: [
             {
-              type: 'sendTo',
+              type: 'xstate.sendTo',
               params: {
-                actorRef: '{% $system.worker %}',
-                event: '{% { "type": "PING" } %}',
+                actorRef: '{{ $system.worker }}',
+                event: '{{ { "type": "PING" } }}',
               },
             },
           ],
@@ -202,8 +250,28 @@ describe('machineSchema', () => {
       states: {
         a: {
           entry: [
-            { type: 'log', params: { message: '{% "count: " & $context.count %}' } },
-            { type: 'log' },
+            { type: 'xstate.log', params: { message: '{{ "count: " & $context.count }}' } },
+            { type: 'xstate.log' },
+          ],
+        },
+      },
+    });
+  });
+
+  test('emit action', () => {
+    machineSchema.parse({
+      initial: 'a',
+      states: {
+        a: {
+          entry: [
+            {
+              type: 'xstate.emit',
+              params: { event: { type: 'NOTIFICATION', message: 'hello' } },
+            },
+            {
+              type: 'xstate.emit',
+              params: { event: '{{ { "type": "PROGRESS", "value": context.progress } }}' },
+            },
           ],
         },
       },
@@ -242,11 +310,11 @@ describe('machineSchema', () => {
       initial: 'active',
       states: {
         active: {
-          on: { DONE: 'complete' },
+          on: { DONE: { target: 'complete' } },
         },
         complete: {
           type: 'final',
-          output: '{% { "result": $context.data } %}',
+          output: '{{ { "result": $context.data } }}',
         },
       },
     });
@@ -256,7 +324,7 @@ describe('machineSchema', () => {
     machineSchema.parse({
       initial: 'active',
       states: {
-        active: { on: { DONE: 'complete' } },
+        active: { on: { DONE: { target: 'complete' } } },
         complete: {
           type: 'final',
           output: { status: 'ok' },
@@ -276,19 +344,19 @@ describe('machineSchema', () => {
             {
               id: 'worker',
               src: 'processOrder',
-              input: '{% { "orderId": $context.orderId } %}',
+              input: '{{ { "orderId": $context.orderId } }}',
               timeout: 'PT30S',
               heartbeat: 'PT5S',
               onDone: { target: 'done' },
               onError: [
-                { target: 'processing', guard: '{% $context.retries < 3 %}' },
+                { target: 'processing', guard: '{{ $context.retries < 3 }}' },
                 { target: 'failed' },
               ],
               onSnapshot: {
                 actions: [
                   {
-                    type: 'assign',
-                    params: { progress: '{% $event.snapshot %}' },
+                    type: 'xstate.assign',
+                    params: { progress: '{{ $event.snapshot }}' },
                   },
                 ],
               },
@@ -297,6 +365,60 @@ describe('machineSchema', () => {
         },
         done: { type: 'final' },
         failed: { type: 'final' },
+      },
+    });
+  });
+
+  test('invoke with retry policy', () => {
+    machineSchema.parse({
+      initial: 'loading',
+      states: {
+        loading: {
+          invoke: [
+            {
+              src: 'fetchData',
+              retry: { maxAttempts: 3, interval: 1000, backoff: 2 },
+              onDone: { target: 'success' },
+              onError: { target: 'failed' },
+            },
+          ],
+        },
+        success: { type: 'final' },
+        failed: { type: 'final' },
+      },
+    });
+  });
+
+  test('invoke with retry ISO duration interval', () => {
+    machineSchema.parse({
+      initial: 'loading',
+      states: {
+        loading: {
+          invoke: [
+            {
+              src: 'fetchData',
+              retry: { maxAttempts: 5, interval: 'PT5S', backoff: 1.5 },
+              onDone: { target: 'success' },
+            },
+          ],
+        },
+        success: { type: 'final' },
+      },
+    });
+  });
+
+  // --- After with ISO 8601 ---
+
+  test('after with ISO 8601 duration', () => {
+    machineSchema.parse({
+      initial: 'waiting',
+      states: {
+        waiting: {
+          after: {
+            PT30S: { target: 'timeout' },
+          },
+        },
+        timeout: { type: 'final' },
       },
     });
   });
@@ -365,24 +487,24 @@ describe('machineSchema', () => {
           tags: ['idle'],
           entry: [
             {
-              type: 'assign',
-              params: { retries: '{% $context.retries + 1 %}' },
+              type: 'xstate.assign',
+              params: { retries: '{{ $context.retries + 1 }}' },
             },
           ],
           on: {
             SUBMIT: {
               target: 'processing',
-              guard: '{% $context.items.length > 0 %}',
+              guard: '{{ $context.items.length > 0 }}',
               actions: [
                 {
-                  type: 'log',
+                  type: 'xstate.log',
                   params: {
-                    message: "{% 'Order ' & $event.orderId %}",
+                    message: "{{ 'Order ' & $event.orderId }}",
                   },
                 },
               ],
             },
-            CANCEL: 'cancelled',
+            CANCEL: { target: 'cancelled' },
           },
         },
         processing: {
@@ -391,29 +513,30 @@ describe('machineSchema', () => {
               id: 'processOrder',
               src: 'orderProcessor',
               input:
-                "{% { 'orderId': $context.orderId, 'items': $context.items } %}",
+                "{{ { 'orderId': $context.orderId, 'items': $context.items } }}",
               timeout: 'PT30S',
+              retry: { maxAttempts: 3, interval: 'PT2S', backoff: 2 },
               onDone: {
                 target: 'complete',
                 actions: [
                   {
-                    type: 'assign',
-                    params: { result: '{% $event.output %}' },
+                    type: 'xstate.assign',
+                    params: { result: '{{ $event.output }}' },
                   },
                 ],
               },
               onError: [
                 {
                   target: 'pending',
-                  guard: '{% $context.retries < 3 %}',
+                  guard: '{{ $context.retries < 3 }}',
                 },
                 { target: 'failed' },
               ],
               onSnapshot: {
                 actions: [
                   {
-                    type: 'assign',
-                    params: { progress: '{% $event.snapshot %}' },
+                    type: 'xstate.assign',
+                    params: { progress: '{{ $event.snapshot }}' },
                   },
                 ],
               },
@@ -422,7 +545,7 @@ describe('machineSchema', () => {
         },
         complete: {
           type: 'final',
-          output: "{% { 'result': $context.result } %}",
+          output: "{{ { 'result': $context.result } }}",
         },
         cancelled: { type: 'final' },
         failed: { type: 'final' },

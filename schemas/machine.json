@@ -68,32 +68,7 @@
           {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "target": {
-                  "type": "string"
-                },
-                "actions": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/Action"
-                  }
-                },
-                "description": {
-                  "type": "string"
-                },
-                "guard": {
-                  "$ref": "#/$defs/Guard"
-                },
-                "meta": {
-                  "$ref": "#/$defs/Meta"
-                },
-                "order": {
-                  "description": "Explicit transition priority",
-                  "type": "number"
-                }
-              },
-              "additionalProperties": false
+              "$ref": "#/$defs/Transition"
             }
           },
           {
@@ -103,7 +78,7 @@
       }
     },
     "after": {
-      "description": "The delayed transitions that will trigger after the specified delay",
+      "description": "Delayed transitions. Keys can be milliseconds (number as string) or ISO 8601 durations (e.g. PT30S, PT1M).",
       "type": "object",
       "propertyNames": {
         "type": "string"
@@ -113,32 +88,7 @@
           {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "target": {
-                  "type": "string"
-                },
-                "actions": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/Action"
-                  }
-                },
-                "description": {
-                  "type": "string"
-                },
-                "guard": {
-                  "$ref": "#/$defs/Guard"
-                },
-                "meta": {
-                  "$ref": "#/$defs/Meta"
-                },
-                "order": {
-                  "description": "Explicit transition priority",
-                  "type": "number"
-                }
-              },
-              "additionalProperties": false
+              "$ref": "#/$defs/Transition"
             }
           },
           {
@@ -153,32 +103,7 @@
         {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "target": {
-                "type": "string"
-              },
-              "actions": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/$defs/Action"
-                }
-              },
-              "description": {
-                "type": "string"
-              },
-              "guard": {
-                "$ref": "#/$defs/Guard"
-              },
-              "meta": {
-                "$ref": "#/$defs/Meta"
-              },
-              "order": {
-                "description": "Explicit transition priority",
-                "type": "number"
-              }
-            },
-            "additionalProperties": false
+            "$ref": "#/$defs/Transition"
           }
         },
         {
@@ -204,9 +129,9 @@
       "description": "Output data for final states",
       "anyOf": [
         {
-          "description": "An expression string delimited by {% %}",
+          "description": "An expression string delimited by {{ }}",
           "type": "string",
-          "pattern": "^\\{%[\\s\\S]*%\\}$"
+          "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
         },
         {}
       ]
@@ -299,7 +224,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "const": "assign"
+              "const": "xstate.assign"
             },
             "params": {
               "type": "object",
@@ -309,9 +234,9 @@
               "additionalProperties": {
                 "anyOf": [
                   {
-                    "description": "An expression string delimited by {% %}",
+                    "description": "An expression string delimited by {{ }}",
                     "type": "string",
-                    "pattern": "^\\{%[\\s\\S]*%\\}$"
+                    "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
                   },
                   {}
                 ]
@@ -329,7 +254,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "const": "raise"
+              "const": "xstate.raise"
             },
             "params": {
               "type": "object",
@@ -337,9 +262,9 @@
                 "event": {
                   "anyOf": [
                     {
-                      "description": "An expression string delimited by {% %}",
+                      "description": "An expression string delimited by {{ }}",
                       "type": "string",
-                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                      "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
                     },
                     {}
                   ]
@@ -362,7 +287,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "const": "sendTo"
+              "const": "xstate.sendTo"
             },
             "params": {
               "type": "object",
@@ -370,9 +295,9 @@
                 "actorRef": {
                   "anyOf": [
                     {
-                      "description": "An expression string delimited by {% %}",
+                      "description": "An expression string delimited by {{ }}",
                       "type": "string",
-                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                      "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
                     },
                     {
                       "type": "string"
@@ -382,9 +307,9 @@
                 "event": {
                   "anyOf": [
                     {
-                      "description": "An expression string delimited by {% %}",
+                      "description": "An expression string delimited by {{ }}",
                       "type": "string",
-                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                      "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
                     },
                     {}
                   ]
@@ -392,9 +317,9 @@
                 "delay": {
                   "anyOf": [
                     {
-                      "description": "An expression string delimited by {% %}",
+                      "description": "An expression string delimited by {{ }}",
                       "type": "string",
-                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                      "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
                     },
                     {
                       "anyOf": [
@@ -427,7 +352,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "const": "log"
+              "const": "xstate.log"
             },
             "params": {
               "type": "object",
@@ -435,9 +360,9 @@
                 "message": {
                   "anyOf": [
                     {
-                      "description": "An expression string delimited by {% %}",
+                      "description": "An expression string delimited by {{ }}",
                       "type": "string",
-                      "pattern": "^\\{%[\\s\\S]*%\\}$"
+                      "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
                     },
                     {
                       "type": "string"
@@ -453,6 +378,39 @@
           },
           "required": [
             "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "xstate.emit"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "anyOf": [
+                    {
+                      "description": "An expression string delimited by {{ }}",
+                      "type": "string",
+                      "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
+                    },
+                    {}
+                  ]
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type",
+            "params"
           ],
           "additionalProperties": false
         },
@@ -478,6 +436,52 @@
       ],
       "id": "Action"
     },
+    "Transition": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "context": {
+          "description": "Context assignments applied when this transition is taken. Appended as an assign action.",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "description": "An expression string delimited by {{ }}",
+                "type": "string",
+                "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
+              },
+              {}
+            ]
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "guard": {
+          "$ref": "#/$defs/Guard"
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        },
+        "order": {
+          "description": "Explicit transition priority",
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "id": "Transition"
+    },
     "Guard": {
       "anyOf": [
         {
@@ -500,9 +504,9 @@
           "additionalProperties": false
         },
         {
-          "description": "An expression string delimited by {% %}",
+          "description": "An expression string delimited by {{ }}",
           "type": "string",
-          "pattern": "^\\{%[\\s\\S]*%\\}$"
+          "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
         }
       ],
       "id": "Guard"
@@ -514,42 +518,6 @@
       },
       "additionalProperties": {},
       "id": "Meta"
-    },
-    "Transition": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "target": {
-              "type": "string"
-            },
-            "actions": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/Action"
-              }
-            },
-            "description": {
-              "type": "string"
-            },
-            "guard": {
-              "$ref": "#/$defs/Guard"
-            },
-            "meta": {
-              "$ref": "#/$defs/Meta"
-            },
-            "order": {
-              "description": "Explicit transition priority",
-              "type": "number"
-            }
-          },
-          "additionalProperties": false
-        }
-      ],
-      "id": "Transition"
     },
     "Invoke": {
       "type": "object",
@@ -564,9 +532,9 @@
           "description": "Input passed to the invoked actor",
           "anyOf": [
             {
-              "description": "An expression string delimited by {% %}",
+              "description": "An expression string delimited by {{ }}",
               "type": "string",
-              "pattern": "^\\{%[\\s\\S]*%\\}$"
+              "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
             },
             {}
           ]
@@ -583,32 +551,7 @@
             {
               "type": "array",
               "items": {
-                "type": "object",
-                "properties": {
-                  "target": {
-                    "type": "string"
-                  },
-                  "actions": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/Action"
-                    }
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "guard": {
-                    "$ref": "#/$defs/Guard"
-                  },
-                  "meta": {
-                    "$ref": "#/$defs/Meta"
-                  },
-                  "order": {
-                    "description": "Explicit transition priority",
-                    "type": "number"
-                  }
-                },
-                "additionalProperties": false
+                "$ref": "#/$defs/Transition"
               }
             },
             {
@@ -621,32 +564,7 @@
             {
               "type": "array",
               "items": {
-                "type": "object",
-                "properties": {
-                  "target": {
-                    "type": "string"
-                  },
-                  "actions": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/Action"
-                    }
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "guard": {
-                    "$ref": "#/$defs/Guard"
-                  },
-                  "meta": {
-                    "$ref": "#/$defs/Meta"
-                  },
-                  "order": {
-                    "description": "Explicit transition priority",
-                    "type": "number"
-                  }
-                },
-                "additionalProperties": false
+                "$ref": "#/$defs/Transition"
               }
             },
             {
@@ -660,32 +578,7 @@
             {
               "type": "array",
               "items": {
-                "type": "object",
-                "properties": {
-                  "target": {
-                    "type": "string"
-                  },
-                  "actions": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/Action"
-                    }
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "guard": {
-                    "$ref": "#/$defs/Guard"
-                  },
-                  "meta": {
-                    "$ref": "#/$defs/Meta"
-                  },
-                  "order": {
-                    "description": "Explicit transition priority",
-                    "type": "number"
-                  }
-                },
-                "additionalProperties": false
+                "$ref": "#/$defs/Transition"
               }
             },
             {
@@ -700,6 +593,37 @@
         "heartbeat": {
           "description": "ISO 8601 duration for heartbeat interval",
           "type": "string"
+        },
+        "retry": {
+          "description": "Retry policy for the invoked actor on error",
+          "type": "object",
+          "properties": {
+            "maxAttempts": {
+              "description": "Maximum number of retry attempts",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "interval": {
+              "description": "Delay between retries: ms (number) or ISO 8601 duration (string)",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "backoff": {
+              "description": "Backoff multiplier applied to interval after each retry",
+              "type": "number"
+            }
+          },
+          "required": [
+            "maxAttempts"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -787,32 +711,7 @@
               {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "target": {
-                      "type": "string"
-                    },
-                    "actions": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/$defs/Action"
-                      }
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "guard": {
-                      "$ref": "#/$defs/Guard"
-                    },
-                    "meta": {
-                      "$ref": "#/$defs/Meta"
-                    },
-                    "order": {
-                      "description": "Explicit transition priority",
-                      "type": "number"
-                    }
-                  },
-                  "additionalProperties": false
+                  "$ref": "#/$defs/Transition"
                 }
               },
               {
@@ -822,7 +721,7 @@
           }
         },
         "after": {
-          "description": "The delayed transitions that will trigger after the specified delay",
+          "description": "Delayed transitions. Keys can be milliseconds (number as string) or ISO 8601 durations (e.g. PT30S, PT1M).",
           "type": "object",
           "propertyNames": {
             "type": "string"
@@ -832,32 +731,7 @@
               {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "target": {
-                      "type": "string"
-                    },
-                    "actions": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/$defs/Action"
-                      }
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "guard": {
-                      "$ref": "#/$defs/Guard"
-                    },
-                    "meta": {
-                      "$ref": "#/$defs/Meta"
-                    },
-                    "order": {
-                      "description": "Explicit transition priority",
-                      "type": "number"
-                    }
-                  },
-                  "additionalProperties": false
+                  "$ref": "#/$defs/Transition"
                 }
               },
               {
@@ -872,32 +746,7 @@
             {
               "type": "array",
               "items": {
-                "type": "object",
-                "properties": {
-                  "target": {
-                    "type": "string"
-                  },
-                  "actions": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/Action"
-                    }
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "guard": {
-                    "$ref": "#/$defs/Guard"
-                  },
-                  "meta": {
-                    "$ref": "#/$defs/Meta"
-                  },
-                  "order": {
-                    "description": "Explicit transition priority",
-                    "type": "number"
-                  }
-                },
-                "additionalProperties": false
+                "$ref": "#/$defs/Transition"
               }
             },
             {
@@ -923,9 +772,9 @@
           "description": "Output data for final states",
           "anyOf": [
             {
-              "description": "An expression string delimited by {% %}",
+              "description": "An expression string delimited by {{ }}",
               "type": "string",
-              "pattern": "^\\{%[\\s\\S]*%\\}$"
+              "pattern": "^\\{\\{[\\s\\S]*\\}\\}$"
             },
             {}
           ]

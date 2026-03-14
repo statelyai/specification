@@ -9,19 +9,19 @@ import {
 // --- Actions ---
 
 export const assignActionSchema = z.object({
-  type: z.literal('assign'),
+  type: z.literal('xstate.assign'),
   params: z.record(z.string(), expressionOr(z.any())),
 });
 
 export const raiseActionSchema = z.object({
-  type: z.literal('raise'),
+  type: z.literal('xstate.raise'),
   params: z.object({
     event: expressionOr(z.any()),
   }),
 });
 
 export const sendToActionSchema = z.object({
-  type: z.literal('sendTo'),
+  type: z.literal('xstate.sendTo'),
   params: z.object({
     actorRef: expressionOr(z.string()),
     event: expressionOr(z.any()),
@@ -30,12 +30,19 @@ export const sendToActionSchema = z.object({
 });
 
 export const logActionSchema = z.object({
-  type: z.literal('log'),
+  type: z.literal('xstate.log'),
   params: z
     .object({
       message: expressionOr(z.string()),
     })
     .optional(),
+});
+
+export const emitActionSchema = z.object({
+  type: z.literal('xstate.emit'),
+  params: z.object({
+    event: expressionOr(z.any()),
+  }),
 });
 
 export const customActionSchema = z.object({
@@ -48,6 +55,7 @@ export const actionSchema = z.union([
   raiseActionSchema,
   sendToActionSchema,
   logActionSchema,
+  emitActionSchema,
   customActionSchema,
 ]);
 
@@ -68,6 +76,12 @@ export const metaSchema = z.record(z.string(), z.any());
 
 export const transitionObjectSchema = z.object({
   target: z.string().optional(),
+  context: z
+    .record(z.string(), expressionOr(z.any()))
+    .optional()
+    .describe(
+      'Context assignments applied when this transition is taken. Appended as an assign action.'
+    ),
   actions: z.array(actionSchema).optional(),
   description: z.string().optional(),
   guard: guardSchema.optional(),
@@ -75,16 +89,31 @@ export const transitionObjectSchema = z.object({
   order: z.number().optional().describe('Explicit transition priority'),
 });
 
-/** A transition can be a string (target shorthand), an object, or an array of objects */
-export const transitionSchema = z.union([
-  z.string(),
-  transitionObjectSchema,
-]);
+/** A transition is an object or an array of objects (for branching) */
+export const transitionSchema = transitionObjectSchema;
 
 export const transitionsSchema = z.union([
   z.array(transitionObjectSchema),
-  transitionSchema,
+  transitionObjectSchema,
 ]);
+
+// --- Retry ---
+
+export const retrySchema = z.object({
+  maxAttempts: z
+    .number()
+    .int()
+    .min(1)
+    .describe('Maximum number of retry attempts'),
+  interval: z
+    .union([z.string(), z.number()])
+    .optional()
+    .describe('Delay between retries: ms (number) or ISO 8601 duration (string)'),
+  backoff: z
+    .number()
+    .optional()
+    .describe('Backoff multiplier applied to interval after each retry'),
+});
 
 // --- Invoke ---
 
@@ -106,6 +135,9 @@ export const invokeSchema = z.object({
     .string()
     .optional()
     .describe('ISO 8601 duration for heartbeat interval'),
+  retry: retrySchema
+    .optional()
+    .describe('Retry policy for the invoked actor on error'),
 });
 
 // --- State ---
@@ -141,7 +173,7 @@ export const stateSchema: z.ZodObject<any> = z.object({
     .record(z.string(), transitionsSchema)
     .optional()
     .describe(
-      'The delayed transitions that will trigger after the specified delay'
+      'Delayed transitions. Keys can be milliseconds (number as string) or ISO 8601 durations (e.g. PT30S, PT1M).'
     ),
   always: transitionsSchema
     .optional()

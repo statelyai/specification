@@ -9,8 +9,8 @@ export const queryLanguageSchema = z
 
 export const expressionSchema = z
   .string()
-  .regex(/^\{%[\s\S]*%\}$/)
-  .describe('An expression string delimited by {% %}');
+  .regex(/^\{\{[\s\S]*\}\}$/)
+  .describe('An expression string delimited by {{ }}');
 
 /** Creates a union of expression string or the given schema */
 export function expressionOr<T extends z.ZodType>(schema: T) {

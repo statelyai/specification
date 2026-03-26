@@ -142,7 +142,7 @@ export const invokeSchema = z.object({
 
 // --- State ---
 
-export const stateSchema: z.ZodObject<any> = z.object({
+export const stateSchema = z.object({
   id: z.string().optional().describe('The state node ID'),
   description: z
     .string()
